@@ -13,12 +13,6 @@ appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 // 初期化
 const app = initializeApp(firebaseConfig);
-
-// Firestoreデータベースを使う準備
-const db = getFirestore(app);
-// Firebase認証(Auth)を使う準備
-const auth = getAuth(app); // 認証サービス本体
-const provider = new GoogleAuthProvider(); // Googleログイン専用の「認証プロバイダ」
-
-// Firestoreインスタンスをエクスポート
-export { db, auth, provider };
+export const db = getFirestore(app);
+export const auth = getAuth(app);
+export const provider = new GoogleAuthProvider();

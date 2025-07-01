@@ -1,54 +1,36 @@
-// src/find.js
 import { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from './Firebase';
-import Navigation from './components/Navigation';
+import { db } from './firebase';
 
-function FindUserPage() {
-  const [users, setUsers] = useState([]);
+function FindTodo() {
+  const [todos, setTodos] = useState([]);
   const [keyword, setKeyword] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [filtered, setFiltered] = useState([]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const usersCol = collection(db, 'mydata');
-      const userSnapshot = await getDocs(usersCol);
-      const userList = userSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setUsers(userList);
-      setFilteredUsers(userList);
+    const fetch = async () => {
+      const snapshot = await getDocs(collection(db, 'todos'));
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setTodos(data);
+      setFiltered(data);
     };
-
-    fetchUsers();
+    fetch();
   }, []);
 
   const handleSearch = (e) => {
     const kw = e.target.value;
     setKeyword(kw);
-
-    const filtered = users.filter(user =>
-      user.name.toLowerCase().includes(kw.toLowerCase())
-    );
-    setFilteredUsers(filtered);
+    setFiltered(todos.filter(t => t.title.includes(kw)));
   };
 
   return (
-    <div>
-      
-      <h2>ユーザー検索ページ</h2>
-      <input
-        type="text"
-        placeholder="名前で検索"
-        value={keyword}
-        onChange={handleSearch}
-        style={{ marginBottom: '10px', padding: '5px' }}
-      />
+    <div className="max-w-md mx-auto p-4">
+      <h2 className="text-xl mb-2">タスク検索</h2>
+      <input type="text" value={keyword} onChange={handleSearch} placeholder="タイトルで検索" className="w-full border p-1 mb-2" />
       <ul>
-        {filteredUsers.map(user => (
-          <li key={user.id}>
-            {user.name} - {user.mail} - {user.dorm ? "寮生" : "通学"}
+        {filtered.map(todo => (
+          <li key={todo.id} className="bg-white p-2 mb-1 shadow rounded">
+            {todo.title} - {todo.date}
           </li>
         ))}
       </ul>
@@ -56,4 +38,4 @@ function FindUserPage() {
   );
 }
 
-export default FindUserPage;
+export default FindTodo;
